@@ -27,6 +27,8 @@ Resources:
       Policies:
         - S3ReadPolicy:
             BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt PatientCheckoutTopic.TopicName
       Environment: 
         Variables:
           PATIENT_CHECKOUT_TOPIC: !Ref PatientCheckoutTopic
@@ -36,3 +38,15 @@ Resources:
           Properties:
             Bucket: !Ref PatientCheckoutBucket
             Events: s3:ObjectCreated:*
+  BillManagementFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: patientcheckout
+      Handler: com.thanthu.aws.lambda.s3sns.BillManagementLambda::handler
+      Runtime: java11
+      MemorySize: 512
+      Events:
+        SNSEvent:
+          Type: SNS 
+          Properties:
+            Topic: !Ref PatientCheckoutTopic
