@@ -46,11 +46,15 @@ public class PatientCheckoutLambda {
 						StringWriter stringWriter = new StringWriter();
 						e.printStackTrace(new PrintWriter(stringWriter));
 						logger.log(stringWriter.toString());
+						throw new RuntimeException(e);
 					}
 				});
 
 			} catch (IOException e) {
-				e.printStackTrace();
+				StringWriter stringWriter = new StringWriter();
+				e.printStackTrace(new PrintWriter(stringWriter));
+				logger.log(stringWriter.toString());
+				throw new RuntimeException(e);
 			}
 		});
 	}

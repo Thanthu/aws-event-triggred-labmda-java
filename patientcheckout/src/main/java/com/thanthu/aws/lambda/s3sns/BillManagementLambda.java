@@ -1,5 +1,8 @@
 package com.thanthu.aws.lambda.s3sns;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.SNSEvent;
@@ -19,7 +22,10 @@ public class BillManagementLambda {
 						PatientCheckoutEvent.class);
 				logger.log(patientCheckoutEvent.toString());
 			} catch (JsonProcessingException e) {
-				e.printStackTrace();
+				StringWriter stringWriter = new StringWriter();
+				e.printStackTrace(new PrintWriter(stringWriter));
+				logger.log(stringWriter.toString());
+				throw new RuntimeException(e);
 			}
 		});
 	}
