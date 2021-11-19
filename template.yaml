@@ -26,7 +26,6 @@ Resources:
       Handler: com.thanthu.aws.lambda.s3sns.PatientCheckoutLambda::handler
       Runtime: java11
       MemorySize: 512
-      MaximumRetryAttempts: 0
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref PatientCheckoutDLQ
@@ -51,7 +50,6 @@ Resources:
       Handler: com.thanthu.aws.lambda.s3sns.BillManagementLambda::handler
       Runtime: java11
       MemorySize: 512
-      MaximumRetryAttempts: 0
       Events:
         SNSEvent:
           Type: SNS 
