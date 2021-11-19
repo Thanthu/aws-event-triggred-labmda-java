@@ -11,6 +11,8 @@ Globals:
     Timeout: 20
 
 Resources:
+  PatientCheckoutDLQ:
+    Type: AWS::SNS::Topic
   PatientCheckoutBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -24,6 +26,10 @@ Resources:
       Handler: com.thanthu.aws.lambda.s3sns.PatientCheckoutLambda::handler
       Runtime: java11
       MemorySize: 512
+      MaximumRetryAttempts: 0
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref PatientCheckoutDLQ
       Policies:
         - S3ReadPolicy:
             BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
@@ -45,8 +51,21 @@ Resources:
       Handler: com.thanthu.aws.lambda.s3sns.BillManagementLambda::handler
       Runtime: java11
       MemorySize: 512
+      MaximumRetryAttempts: 0
       Events:
         SNSEvent:
           Type: SNS 
           Properties:
             Topic: !Ref PatientCheckoutTopic
+  ErrorHandlingFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: patientcheckout
+      Handler: com.thanthu.aws.lambda.s3sns.ErrorHandler::handler
+      Runtime: java11
+      MemorySize: 512
+      Events:
+        SNSEvent:
+          Type: SNS 
+          Properties:
+            Topic: !Ref PatientCheckoutDLQ
